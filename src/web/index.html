@@ -3,220 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RideEat Support AI — TensorForge 2.0 MVP</title>
+    <title>RideEat Triage</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f19; color: #f3f4f6; }
-        .glass-panel { background: rgba(17, 24, 39, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
-        .gradient-text { background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #0b0f17;
+            color: #e2e8f0;
+        }
+        .card {
+            background: #111827;
+            border: 1px solid #1f2937;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased">
-    <!-- Navbar -->
-    <header class="border-b border-gray-800 bg-gray-950/80 backdrop-blur sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <!-- Minimal Header -->
+    <header class="border-b border-gray-800 bg-gray-900/60 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                    <i class="fa-solid fa-bolt text-white text-lg"></i>
-                </div>
-                <div>
-                    <span class="font-bold text-lg tracking-tight text-white">RideEat <span class="gradient-text">Forge AI</span></span>
-                    <span class="text-xs px-2 py-0.5 rounded-full bg-cyan-950/80 text-cyan-400 border border-cyan-800 ml-2">Team XTurbo • Phase 2 MVP</span>
-                </div>
+                <span class="font-semibold text-sm tracking-wide text-white">RideEat Triage</span>
+                <span class="text-xs px-2 py-0.5 rounded bg-gray-800 text-gray-400 border border-gray-700">Team XTurbo</span>
+                <span class="text-xs text-gray-500">v1.2</span>
             </div>
             <div class="flex items-center space-x-4">
-                <div id="healthBadge" class="flex items-center space-x-2 text-xs font-semibold px-3 py-1.5 rounded-full bg-emerald-950/60 text-emerald-400 border border-emerald-800/80">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span id="healthText">Model Ready (v1.2)</span>
+                <div id="healthBadge" class="flex items-center space-x-1.5 text-xs text-emerald-400">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    <span id="healthText">Service Online</span>
                 </div>
-                <a href="/health" target="_blank" class="text-xs text-gray-400 hover:text-white transition">API /health <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-[10px]"></i></a>
+                <a href="/health" target="_blank" class="text-xs text-gray-400 hover:text-gray-200 transition">/health</a>
             </div>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        <!-- Hero Banner -->
-        <div class="glass-panel rounded-2xl p-6 sm:p-8 relative overflow-hidden">
-            <div class="absolute -right-20 -top-20 w-80 h-80 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="max-w-3xl">
-                <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-2">Multilingual Ticket Classification & Routing Engine</h1>
-                <p class="text-gray-400 text-sm sm:text-base leading-relaxed">
-                    Automated triage and team routing for RideEat customer support across English, Sinhala (Unicode & Singlish), Tamil (Unicode & Tanglish), and mixed scripts. Pure offline ML inference conforming strictly to OpenAPI v2.1.0 specifications.
-                </p>
-            </div>
-        </div>
-
-        <!-- Grid Layout: Left Live Tester, Right Telemetry & Job Simulator -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <!-- Left: Single Ticket Interactive Classifier -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-6 space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Left: Ticket Classifier -->
             <div class="lg:col-span-7 space-y-6">
-                <div class="glass-panel rounded-2xl p-6 shadow-xl">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-bold text-white flex items-center">
-                            <i class="fa-solid fa-ticket text-cyan-400 mr-2"></i> Live Ticket Classifier
-                        </h2>
-                        <span class="text-xs text-gray-400">POST /predict</span>
+                <div class="card rounded-xl p-5 space-y-4">
+                    <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+                        <h2 class="text-sm font-semibold text-white tracking-wide">Ticket Classification</h2>
+                        <span class="text-[11px] text-gray-400 font-mono">POST /predict</span>
                     </div>
 
-                    <!-- Quick Preset Samples -->
-                    <div class="mb-4">
-                        <label class="block text-xs font-medium text-gray-400 mb-1.5">Load Sample Preset:</label>
-                        <div class="flex flex-wrap gap-2">
-                            <button onclick="loadSample('singlish_delay')" class="text-xs px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 transition">Singlish Delay</button>
-                            <button onclick="loadSample('sinhala_lost')" class="text-xs px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 transition">Sinhala Lost Item</button>
-                            <button onclick="loadSample('tamil_missing')" class="text-xs px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 transition">Tamil Missing Food</button>
-                            <button onclick="loadSample('safety_urgent')" class="text-xs px-2.5 py-1 rounded-lg bg-red-950/50 hover:bg-red-900/50 text-red-300 border border-red-800/80 transition">Safety Urgent</button>
+                    <!-- Presets -->
+                    <div>
+                        <div class="flex flex-wrap gap-1.5">
+                            <button type="button" onclick="loadSample('singlish_delay')" class="text-xs px-2.5 py-1 rounded bg-gray-800/80 hover:bg-gray-750 text-gray-300 border border-gray-700 transition">Singlish Delay</button>
+                            <button type="button" onclick="loadSample('sinhala_lost')" class="text-xs px-2.5 py-1 rounded bg-gray-800/80 hover:bg-gray-750 text-gray-300 border border-gray-700 transition">Sinhala Lost Item</button>
+                            <button type="button" onclick="loadSample('tamil_missing')" class="text-xs px-2.5 py-1 rounded bg-gray-800/80 hover:bg-gray-750 text-gray-300 border border-gray-700 transition">Tamil Missing Item</button>
+                            <button type="button" onclick="loadSample('safety_urgent')" class="text-xs px-2.5 py-1 rounded bg-gray-800/80 hover:bg-gray-750 text-gray-300 border border-gray-700 transition">Safety Urgent</button>
                         </div>
                     </div>
 
-                    <form id="predictForm" onsubmit="handlePredict(event)" class="space-y-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <form id="predictForm" onsubmit="handlePredict(event)" class="space-y-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-xs font-semibold text-gray-300 mb-1">Ticket Channel</label>
-                                <select id="channelInput" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-cyan-500">
-                                    <option value="chat">Chat</option>
-                                    <option value="email">Email</option>
-                                    <option value="call_transcript">Call Transcript</option>
+                                <label class="block text-xs text-gray-400 mb-1">Channel</label>
+                                <select id="channelInput" class="w-full bg-gray-950 border border-gray-700 rounded-lg px-2.5 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-gray-500">
+                                    <option value="chat">chat</option>
+                                    <option value="email">email</option>
+                                    <option value="call_transcript">call_transcript</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-gray-300 mb-1">Subject (Optional)</label>
-                                <input type="text" id="subjectInput" placeholder="e.g. Order #8491 delayed" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-cyan-500">
+                                <label class="block text-xs text-gray-400 mb-1">Subject</label>
+                                <input type="text" id="subjectInput" placeholder="Optional subject" class="w-full bg-gray-950 border border-gray-700 rounded-lg px-2.5 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-gray-500">
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-gray-300 mb-1">Ticket Body / Transcript</label>
-                            <textarea id="textInput" rows="4" required placeholder="Type customer message in English, Sinhala, Tamil, or Singlish..." class="w-full bg-gray-900 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 focus:outline-none focus:border-cyan-500"></textarea>
+                            <label class="block text-xs text-gray-400 mb-1">Text</label>
+                            <textarea id="textInput" rows="4" required placeholder="Enter ticket text..." class="w-full bg-gray-950 border border-gray-700 rounded-lg p-2.5 text-xs text-gray-200 focus:outline-none focus:border-gray-500 font-mono"></textarea>
                         </div>
 
-                        <div class="flex items-center justify-between pt-2">
-                            <span class="text-xs text-gray-500" id="latencyIndicator">Latency: -- ms</span>
-                            <button type="submit" id="predictBtn" class="px-5 py-2.5 rounded-xl font-semibold text-sm bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white shadow-lg shadow-indigo-600/30 transition flex items-center">
-                                <span>Classify Ticket</span>
-                                <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                        <div class="flex items-center justify-between pt-1">
+                            <span class="text-xs text-gray-500 font-mono" id="latencyIndicator">Latency: --</span>
+                            <button type="submit" id="predictBtn" class="px-4 py-1.5 rounded-lg text-xs font-medium bg-blue-600 hover:bg-blue-500 text-white transition">
+                                Classify
                             </button>
                         </div>
                     </form>
 
                     <!-- Prediction Result Card -->
-                    <div id="resultCard" class="hidden mt-6 p-5 rounded-xl bg-gray-900/90 border border-gray-800 space-y-4 animate-fade-in">
-                        <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+                    <div id="resultCard" class="hidden border-t border-gray-800 pt-4 space-y-3">
+                        <div class="flex items-center justify-between">
                             <div>
-                                <span class="text-xs font-medium text-gray-400">Target Team Routing</span>
-                                <h3 id="resTeam" class="text-lg font-bold text-white flex items-center gap-2">
-                                    <span>--</span>
-                                </h3>
+                                <span class="text-[11px] text-gray-400 block">Routing Team</span>
+                                <h3 id="resTeam" class="text-base font-semibold text-white">--</h3>
                             </div>
-                            <div id="resUrgencyBadge" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                            <div id="resUrgencyBadge" class="px-2.5 py-0.5 rounded text-[11px] font-medium uppercase tracking-wider">
                                 Non-Urgent
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs">
+                        <div class="grid grid-cols-3 gap-3 text-xs bg-gray-950/60 p-3 rounded-lg border border-gray-800">
                             <div>
-                                <span class="text-gray-400 block mb-1">Primary Category</span>
-                                <span id="resCategory" class="font-semibold text-cyan-400 text-sm">--</span>
+                                <span class="text-gray-500 block text-[11px]">Category</span>
+                                <span id="resCategory" class="font-medium text-gray-200">--</span>
                             </div>
                             <div>
-                                <span class="text-gray-400 block mb-1">Secondary Issue</span>
-                                <span id="resSecondary" class="font-semibold text-gray-300 text-sm">None</span>
+                                <span class="text-gray-500 block text-[11px]">Secondary</span>
+                                <span id="resSecondary" class="font-medium text-gray-200">None</span>
                             </div>
                             <div>
-                                <span class="text-gray-400 block mb-1">Confidence Score</span>
-                                <div class="flex items-center gap-2">
-                                    <span id="resConfidence" class="font-bold text-white text-sm">--</span>
-                                    <div class="w-16 bg-gray-800 h-2 rounded-full overflow-hidden">
-                                        <div id="confidenceBar" class="bg-cyan-400 h-full w-0"></div>
-                                    </div>
-                                </div>
+                                <span class="text-gray-500 block text-[11px]">Confidence</span>
+                                <span id="resConfidence" class="font-medium text-gray-200">--</span>
                             </div>
                         </div>
 
-                        <div id="reviewAlert" class="hidden p-2.5 rounded-lg bg-amber-950/40 border border-amber-800/60 text-amber-300 text-xs flex items-center">
-                            <i class="fa-solid fa-circle-exclamation mr-2"></i>
-                            <span>Flagged for Human Triage Queue (Confidence &lt; 0.45)</span>
+                        <div id="reviewAlert" class="hidden p-2 rounded bg-amber-950/30 border border-amber-900/50 text-amber-300 text-xs">
+                            Flagged for manual review (Confidence below threshold).
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right: Async Batch Job Simulator -->
+            <!-- Right: Async Bulk Jobs & Routing Reference -->
             <div class="lg:col-span-5 space-y-6">
-                <div class="glass-panel rounded-2xl p-6 shadow-xl space-y-5">
-                    <div class="flex items-center justify-between">
-                        <h2 class="text-lg font-bold text-white flex items-center">
-                            <i class="fa-solid fa-microchip text-indigo-400 mr-2"></i> Async Bulk Evaluation
-                        </h2>
-                        <span class="text-xs text-gray-400">POST /batch/jobs</span>
+                <!-- Batch Jobs -->
+                <div class="card rounded-xl p-5 space-y-4">
+                    <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+                        <h2 class="text-sm font-semibold text-white tracking-wide">Async Batch Jobs</h2>
+                        <span class="text-[11px] text-gray-400 font-mono">POST /batch/jobs</span>
                     </div>
-                    <p class="text-xs text-gray-400 leading-relaxed">
-                        Simulate asynchronous bulk evaluation runs (up to 5,000 tickets). Demonstrates non-blocking background worker, 202 Location header, live progress polling, and paginated results.
-                    </p>
 
-                    <div class="p-4 rounded-xl bg-gray-900/80 border border-gray-800 space-y-4">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-semibold text-gray-300">Ticket Volume</span>
-                            <div class="space-x-2">
-                                <button onclick="setJobCount(50)" class="text-xs px-2.5 py-1 rounded bg-gray-800 hover:bg-gray-700 text-gray-300">50</button>
-                                <button onclick="setJobCount(200)" class="text-xs px-2.5 py-1 rounded bg-gray-800 hover:bg-gray-700 text-gray-300">200</button>
-                                <button onclick="setJobCount(1000)" class="text-xs px-2.5 py-1 rounded bg-indigo-900/60 text-indigo-300 border border-indigo-700">1,000</button>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-gray-400">Ticket Count</span>
+                            <div class="space-x-1">
+                                <button type="button" onclick="setJobCount(50)" class="px-2 py-0.5 rounded bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs border border-gray-700">50</button>
+                                <button type="button" onclick="setJobCount(200)" class="px-2 py-0.5 rounded bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs border border-gray-700">200</button>
+                                <button type="button" onclick="setJobCount(1000)" class="px-2 py-0.5 rounded bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs border border-gray-700">1000</button>
                             </div>
                         </div>
 
-                        <button onclick="submitBatchJob()" id="jobSubmitBtn" class="w-full py-2.5 rounded-xl font-semibold text-sm bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/20 transition flex items-center justify-center space-x-2">
-                            <i class="fa-solid fa-play text-xs"></i>
+                        <button type="button" onclick="submitBatchJob()" id="jobSubmitBtn" class="w-full py-1.5 rounded-lg text-xs font-medium bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 transition">
                             <span id="jobSubmitText">Submit 200 Tickets Job</span>
                         </button>
                     </div>
 
-                    <!-- Job Status & Progress Tracker -->
-                    <div id="jobProgressCard" class="hidden p-4 rounded-xl bg-gray-900/90 border border-gray-800 space-y-3">
+                    <!-- Progress Container -->
+                    <div id="jobProgressCard" class="hidden border-t border-gray-800 pt-3 space-y-2">
                         <div class="flex items-center justify-between text-xs">
-                            <span class="text-gray-400">Job ID: <span id="activeJobId" class="text-gray-200 font-mono">--</span></span>
-                            <span id="jobStatusBadge" class="px-2 py-0.5 rounded font-bold uppercase text-[10px] bg-amber-950 text-amber-400 border border-amber-800">queued</span>
+                            <span class="text-gray-400">Job: <span id="activeJobId" class="text-gray-200 font-mono">--</span></span>
+                            <span id="jobStatusBadge" class="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-gray-800 text-gray-300">queued</span>
                         </div>
 
-                        <div>
-                            <div class="flex justify-between text-xs mb-1">
-                                <span class="text-gray-400">Processing Progress</span>
-                                <span id="jobProgressText" class="font-bold text-white">0 / 0</span>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[11px] text-gray-400">
+                                <span>Progress</span>
+                                <span id="jobProgressText" class="font-mono">0 / 0</span>
                             </div>
-                            <div class="w-full bg-gray-800 h-2.5 rounded-full overflow-hidden">
-                                <div id="jobProgressBar" class="bg-indigo-500 h-full w-0 transition-all duration-300"></div>
+                            <div class="w-full bg-gray-950 h-1.5 rounded-full overflow-hidden border border-gray-800">
+                                <div id="jobProgressBar" class="bg-blue-500 h-full w-0 transition-all duration-200"></div>
                             </div>
                         </div>
 
-                        <div id="jobResultsPreview" class="hidden pt-2 text-xs text-gray-400 space-y-1">
-                            <span class="text-emerald-400 font-semibold"><i class="fa-solid fa-check-circle mr-1"></i> Job Completed Successfully!</span>
-                            <p class="text-[11px]">Results ready at <code class="text-cyan-400">/batch/jobs/{id}/results</code> (Retained 6 hours).</p>
+                        <div id="jobResultsPreview" class="hidden text-xs text-gray-400 pt-1">
+                            <span class="text-emerald-400">Completed.</span> Results available at <code class="text-gray-300 font-mono">/batch/jobs/{id}/results</code>.
                         </div>
                     </div>
                 </div>
 
-                <!-- Fixed Routing Reference -->
-                <div class="glass-panel rounded-2xl p-6 shadow-xl">
-                    <h3 class="text-sm font-bold text-gray-200 mb-3 flex items-center">
-                        <i class="fa-solid fa-sitemap text-cyan-400 mr-2"></i> Category Routing Mapping
-                    </h3>
-                    <div class="grid grid-cols-2 gap-2 text-[11px] text-gray-400">
-                        <div class="p-2 rounded bg-gray-900/60 border border-gray-800/80">payment_refund &rarr; <span class="text-gray-200">Payments & Refunds</span></div>
-                        <div class="p-2 rounded bg-gray-900/60 border border-gray-800/80">ride_trip_issue &rarr; <span class="text-gray-200">Ride Operations</span></div>
-                        <div class="p-2 rounded bg-gray-900/60 border border-gray-800/80">lost_item &rarr; <span class="text-gray-200">Lost & Found</span></div>
-                        <div class="p-2 rounded bg-gray-900/60 border border-gray-800/80">order_missing_wrong &rarr; <span class="text-gray-200">Food Operations</span></div>
-                        <div class="p-2 rounded bg-gray-900/60 border border-gray-800/80">delivery_delay &rarr; <span class="text-gray-200">Delivery Operations</span></div>
-                        <div class="p-2 rounded bg-gray-900/60 border border-gray-800/80">safety_conduct &rarr; <span class="text-gray-200">Trust & Safety</span></div>
+                <!-- Routing Reference -->
+                <div class="card rounded-xl p-5 space-y-3">
+                    <h3 class="text-sm font-semibold text-white tracking-wide border-b border-gray-800 pb-2">Category Routing</h3>
+                    <div class="grid grid-cols-2 gap-1.5 text-[11px] text-gray-400">
+                        <div class="p-1.5 rounded bg-gray-950/40 border border-gray-800/80">payment_refund &rarr; Payments & Refunds</div>
+                        <div class="p-1.5 rounded bg-gray-950/40 border border-gray-800/80">ride_trip_issue &rarr; Ride Operations</div>
+                        <div class="p-1.5 rounded bg-gray-950/40 border border-gray-800/80">lost_item &rarr; Lost & Found</div>
+                        <div class="p-1.5 rounded bg-gray-950/40 border border-gray-800/80">order_missing_wrong &rarr; Food Operations</div>
+                        <div class="p-1.5 rounded bg-gray-950/40 border border-gray-800/80">delivery_delay &rarr; Delivery Operations</div>
+                        <div class="p-1.5 rounded bg-gray-950/40 border border-gray-800/80">food_quality &rarr; Restaurant Quality</div>
+                        <div class="p-1.5 rounded bg-gray-950/40 border border-gray-800/80">account_promo &rarr; Account Services</div>
+                        <div class="p-1.5 rounded bg-gray-950/40 border border-gray-800/80">safety_conduct &rarr; Trust & Safety</div>
+                        <div class="p-1.5 rounded bg-gray-950/40 border border-gray-800/80">app_technical &rarr; Tech Support</div>
+                        <div class="p-1.5 rounded bg-gray-950/40 border border-gray-800/80">general_inquiry &rarr; Front-line Support</div>
+                        <div class="p-1.5 rounded bg-gray-950/40 border border-gray-800/80 col-span-2">spam_irrelevant &rarr; Auto-close / Spam Filter</div>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <footer class="border-t border-gray-800 py-6 text-center text-xs text-gray-500">
-        TensorForge 2.0 MVP Stage &bull; Team XTurbo &bull; RideEat Multilingual Classification Engine
+    <footer class="border-t border-gray-800/60 py-4 text-center text-[11px] text-gray-600">
+        TensorForge 2.0 MVP Stage &bull; Team XTurbo
     </footer>
 
     <script>
@@ -262,7 +235,7 @@
             const resultCard = document.getElementById('resultCard');
 
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Classifying...';
+            btn.innerText = 'Classifying...';
 
             const payload = {
                 channel: document.getElementById('channelInput').value,
@@ -272,7 +245,6 @@
 
             const startTime = performance.now();
             try {
-                // Note: when querying locally or via reverse proxy, pass API key from storage or header
                 const res = await fetch('/predict', {
                     method: 'POST',
                     headers: {
@@ -283,7 +255,7 @@
                 });
 
                 const elapsed = Math.round(performance.now() - startTime);
-                latencyIndicator.innerText = `Latency: ${elapsed} ms`;
+                latencyIndicator.innerText = `Latency: ${elapsed}ms`;
 
                 const data = await res.json();
                 if (res.ok) {
@@ -295,7 +267,7 @@
                 latencyIndicator.innerText = `Error: ${err.message}`;
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<span>Classify Ticket</span><i class="fa-solid fa-arrow-right ml-2 text-xs"></i>';
+                btn.innerText = 'Classify';
             }
         }
 
@@ -309,14 +281,13 @@
 
             const confPercent = Math.round(res.confidence * 100);
             document.getElementById('resConfidence').innerText = `${confPercent}%`;
-            document.getElementById('confidenceBar').style.width = `${confPercent}%`;
 
             const urgBadge = document.getElementById('resUrgencyBadge');
             if (res.is_urgent) {
-                urgBadge.className = 'px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-red-950 text-red-400 border border-red-800 animate-pulse';
+                urgBadge.className = 'px-2 py-0.5 rounded text-[11px] font-medium uppercase tracking-wider bg-red-950 text-red-400 border border-red-900';
                 urgBadge.innerText = 'URGENT';
             } else {
-                urgBadge.className = 'px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-gray-800 text-gray-400 border border-gray-700';
+                urgBadge.className = 'px-2 py-0.5 rounded text-[11px] font-medium uppercase tracking-wider bg-gray-800 text-gray-400 border border-gray-700';
                 urgBadge.innerText = 'NON-URGENT';
             }
 
@@ -337,14 +308,13 @@
             const btn = document.getElementById('jobSubmitBtn');
             btn.disabled = true;
 
-            // Generate synthetic batch of tickets
             const tickets = [];
             for (let i = 1; i <= selectedJobCount; i++) {
                 tickets.push({
                     ticket_id: `SIM-JOB-${i}`,
                     channel: i % 2 === 0 ? "chat" : "email",
-                    subject: i % 3 === 0 ? "Order problem" : "",
-                    text: i % 4 === 0 ? "driver never showed up please refund" : "bag left in vehicle"
+                    subject: i % 3 === 0 ? "Order issue" : "",
+                    text: i % 4 === 0 ? "order delayed please process refund" : "item left behind in car"
                 });
             }
 
@@ -379,7 +349,7 @@
 
             progressCard.classList.remove('hidden');
             resultsPreview.classList.add('hidden');
-            activeJobId.innerText = jobId.slice(0, 8) + '...';
+            activeJobId.innerText = jobId.slice(0, 8);
 
             if (activePollingInterval) clearInterval(activePollingInterval);
 
@@ -397,7 +367,7 @@
 
                     if (statusData.status === 'succeeded') {
                         clearInterval(activePollingInterval);
-                        statusBadge.className = 'px-2 py-0.5 rounded font-bold uppercase text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-800';
+                        statusBadge.className = 'px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-emerald-950 text-emerald-400 border border-emerald-900';
                         resultsPreview.classList.remove('hidden');
                         document.getElementById('jobSubmitBtn').disabled = false;
                     }
@@ -409,4 +379,3 @@
     </script>
 </body>
 </html>
-
