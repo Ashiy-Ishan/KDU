@@ -1,4 +1,4 @@
-FROM ml:1
+FROM ashinshanaishan/ml:1
 
 WORKDIR /app
 
