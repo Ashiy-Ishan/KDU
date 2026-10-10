@@ -1,6 +1,9 @@
-FROM ashinshanaishan/ml:1
+FROM python:3.11-slim
 
 WORKDIR /app
+
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY src/ /app/src/
 COPY tests/ /app/tests/
@@ -12,4 +15,4 @@ ENV PYTHONUNBUFFERED=1
 
 EXPOSE 8000
 
-ENTRYPOINT ["python3.11", "/app/src/api/server.py"]
+ENTRYPOINT ["python3", "/app/src/api/server.py"]

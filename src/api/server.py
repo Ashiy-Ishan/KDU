@@ -58,6 +58,9 @@ class TensorForgeRequestHandler(BaseHTTPRequestHandler):
             payload["error"]["details"] = details
         self.send_json(status_code, payload, headers=extra_headers)
 
+    def do_HEAD(self):
+        self.do_GET()
+
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path

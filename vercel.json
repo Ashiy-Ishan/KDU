@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/health",
+      "destination": "https://kdu.onrender.com/health"
+    },
+    {
+      "source": "/predict",
+      "destination": "https://kdu.onrender.com/predict"
+    },
+    {
+      "source": "/predict/batch",
+      "destination": "https://kdu.onrender.com/predict/batch"
+    },
+    {
+      "source": "/batch/:path*",
+      "destination": "https://kdu.onrender.com/batch/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/src/web/index.html"
+    }
+  ]
+}
+
