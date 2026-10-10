@@ -5,7 +5,7 @@
 **Competition**: TensorForge 2.0 (Phase 2 MVP Build) — IEEE Computer Society Student Branch Chapter of KDU  
 **Target Platform**: RideEat Multimodal Mobility & Food Delivery Platform  
 **Model Version**: v1.2 | **API Specification**: OpenAPI 3.0.3 (v2.1.0) / JSON Schema Draft 2020-12  
-**Assigned API Key**: `tf2_842bc2c62f969cfe2b8d9be71606bd1a510ede5fc7ffc8e2`  
+**API Authentication**: Configured via `API_KEY` Environment Variable  
 
 ---
 
