@@ -1,11 +1,3 @@
-"""
-Comprehensive API and Schema Validation Test Suite.
-Verifies server behavior against:
-  - Official Draft 2020-12 Schemas in 'API specs and schemas/'
-  - OpenAPI v2.1.0 status code precedence and error details
-  - Strict authentication and header contracts
-"""
-
 import os
 import sys
 import json
@@ -34,7 +26,6 @@ def validate_json_schema(instance: dict, schema_filename: str):
             msg = f"Schema validation failed for {schema_filename}: " + "; ".join(e.message for e in errors)
             raise AssertionError(msg)
     else:
-        # Fallback structural validation
         assert isinstance(instance, dict), "Response must be a dict"
         if "health" in schema_filename:
             assert "status" in instance and "model_version" in instance
@@ -65,7 +56,6 @@ def run_tests():
     print("RUNNING TENSORFORGE 2.0 AUTOMATED TEST SUITE")
     print("=" * 60)
 
-    # 1. GET /health
     print("\n[1] Testing Public GET /health...")
     status, hdrs, body = make_request("GET", "/health")
     assert status == 200, f"Expected 200, got {status}"
@@ -75,9 +65,7 @@ def run_tests():
     assert data["model_loaded"] is True
     print("    PASSED: /health returns 200 and matches HealthResponse schema.")
 
-    # 2. Authentication Checks
     print("\n[2] Testing Authentication on POST /predict...")
-    # Missing key
     status, hdrs, body = make_request("POST", "/predict", headers={"Content-Type": "application/json"}, body=b"{}")
     assert status == 401, f"Expected 401, got {status}"
     assert "Bearer" in hdrs.get("WWW-Authenticate", "")
@@ -85,32 +73,26 @@ def run_tests():
     validate_json_schema(err_data, "error_response.schema.json")
     print("    PASSED: Missing API key returns 401 with WWW-Authenticate.")
 
-    # Wrong key
     status, hdrs, body = make_request("POST", "/predict", headers={"Content-Type": "application/json", "X-API-Key": "wrong_key"}, body=b"{}")
     assert status == 401, f"Expected 401, got {status}"
 
-    # Bearer header
     ticket = {"channel": "chat", "text": "driver is late refund please", "ticket_id": "TEST-1"}
     body_bytes = json.dumps(ticket).encode("utf-8")
     status, hdrs, body = make_request("POST", "/predict", headers={"Content-Type": "application/json", "Authorization": f"Bearer {API_KEY}"}, body=body_bytes)
     assert status == 200, f"Expected 200, got {status}"
     print("    PASSED: Authorization Bearer header accepted.")
 
-    # 3. HTTP Precedence Order
     print("\n[3] Testing HTTP Precedence Order (Auth -> 415 -> 413 -> 400 -> 422)...")
-    # Unsupported media type (415)
     status, _, body = make_request("POST", "/predict", headers={"X-API-Key": API_KEY, "Content-Type": "text/plain"}, body=b"hello")
     assert status == 415, f"Expected 415, got {status}"
     print("    PASSED: Non-JSON Content-Type returns 415.")
 
-    # Malformed JSON (400)
     status, _, body = make_request("POST", "/predict", headers={"X-API-Key": API_KEY, "Content-Type": "application/json"}, body=b"{bad_json")
     assert status == 400, f"Expected 400, got {status}"
     err = json.loads(body.decode("utf-8"))
     assert err["error"]["code"] == "malformed_json"
     print("    PASSED: Malformed JSON syntax returns 400.")
 
-    # Whitespace-only text (422)
     bad_ticket = {"channel": "chat", "text": "    "}
     status, _, body = make_request("POST", "/predict", headers={"X-API-Key": API_KEY, "Content-Type": "application/json"}, body=json.dumps(bad_ticket).encode("utf-8"))
     assert status == 422, f"Expected 422, got {status}"
@@ -118,13 +100,11 @@ def run_tests():
     validate_json_schema(err, "error_response.schema.json")
     print("    PASSED: Whitespace text returns 422 with details.")
 
-    # Bad channel enum (422)
     bad_channel_ticket = {"channel": "carrier_pigeon", "text": "Valid text"}
     status, _, body = make_request("POST", "/predict", headers={"X-API-Key": API_KEY, "Content-Type": "application/json"}, body=json.dumps(bad_channel_ticket).encode("utf-8"))
     assert status == 422, f"Expected 422, got {status}"
     print("    PASSED: Invalid channel returns 422.")
 
-    # 4. Single Prediction & Consistency Schema
     print("\n[4] Testing POST /predict schema and X-Request-ID echo...")
     req_id = "trace-test-uuid-999"
     test_ticket = {
@@ -142,7 +122,6 @@ def run_tests():
     assert pred_res["team"] == "Lost & Found" or pred_res["category"] == "lost_item"
     print("    PASSED: POST /predict returns valid PredictResponse with echoed X-Request-ID.")
 
-    # 5. Synchronous Batch /predict/batch
     print("\n[5] Testing POST /predict/batch (Synchronous 1-100 tickets)...")
     batch_payload = {
         "tickets": [
@@ -161,7 +140,6 @@ def run_tests():
     assert batch_res["predictions"][2]["ticket_id"] == "T-3"
     print("    PASSED: Synchronous batch prediction preserves order and passes BatchResponse schema.")
 
-    # Batch duplicate ticket_id (422)
     bad_batch = {
         "tickets": [
             {"ticket_id": "DUP-1", "channel": "chat", "text": "first item"},
@@ -174,7 +152,6 @@ def run_tests():
     assert any(d.get("issue") == "duplicate of an earlier item" for d in err_b["error"].get("details", []))
     print("    PASSED: Duplicate ticket_id in batch fails atomically with 422.")
 
-    # 6. Asynchronous Batch Jobs (/batch/jobs)
     print("\n[6] Testing Async Bulk Evaluation Engine (/batch/jobs)...")
     job_tickets = [
         {"ticket_id": f"JOB-TICK-{i}", "channel": "chat", "text": f"Ticket number {i} text for processing"}
@@ -189,7 +166,6 @@ def run_tests():
     job_id = job_status["job_id"]
     print(f"    PASSED: Job created with ID: {job_id}, status: {job_status['status']}.")
 
-    # Poll status until succeeded
     print("    Polling job status...")
     max_wait = 10
     start = time.time()
@@ -207,7 +183,6 @@ def run_tests():
     assert succeeded, "Job did not complete within timeout"
     print("    PASSED: Job reached succeeded state with 20/20 tickets processed.")
 
-    # Fetch Results
     print("    Fetching job results...")
     status, _, body = make_request("GET", f"/batch/jobs/{job_id}/results?offset=0&limit=10", headers={"X-API-Key": API_KEY})
     assert status == 200
@@ -217,11 +192,9 @@ def run_tests():
     assert res_data["next_offset"] == 10
     print("    PASSED: Results fetch and pagination conforms to BatchJobResults schema.")
 
-    # Delete Job (204)
     print("    Cancelling/Discarding job via DELETE...")
     status, _, _ = make_request("DELETE", f"/batch/jobs/{job_id}", headers={"X-API-Key": API_KEY})
     assert status == 204
-    # Subsequent GET returns 404
     status, _, _ = make_request("GET", f"/batch/jobs/{job_id}", headers={"X-API-Key": API_KEY})
     assert status == 404
     print("    PASSED: DELETE returns 204 and subsequent queries return 404.")

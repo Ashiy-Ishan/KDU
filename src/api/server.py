@@ -1,17 +1,6 @@
-"""
-Production-grade HTTP server implementing TensorForge 2.0 OpenAPI v2.1.0 specification.
-Built with standard library http.server.ThreadingHTTPServer for:
-  - 100% offline, zero external runtime dependency requirement
-  - Sub-second cold start (< 0.2s)
-  - Strict byte-level error precedence handling (401 -> 415 -> 413 -> 400 -> 422)
-  - Async job engine integration with Location and Retry-After headers
-  - Embedded HTML5/JS Live Demo Dashboard at / and /dashboard
-"""
-
 import os
 import sys
 
-# Ensure repository root is on sys.path
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
@@ -28,10 +17,9 @@ from src.api.schemas import validate_single_ticket, validate_batch_tickets
 from src.api.job_manager import JobManager
 from src.ml.predictor import TicketPredictor
 
-# Payload Limits
-LIMIT_PREDICT = 1 * 1024 * 1024        # 1 MB
-LIMIT_BATCH_PREDICT = 5 * 1024 * 1024  # 5 MB
-LIMIT_BATCH_JOBS = 25 * 1024 * 1024    # 25 MB
+LIMIT_PREDICT = 1 * 1024 * 1024
+LIMIT_BATCH_PREDICT = 5 * 1024 * 1024
+LIMIT_BATCH_JOBS = 25 * 1024 * 1024
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     daemon_threads = True
@@ -41,7 +29,6 @@ class TensorForgeRequestHandler(BaseHTTPRequestHandler):
     server_version = "TensorForge/2.1.0"
 
     def log_message(self, format, *args):
-        # Override to suppress default noisy stdout logging and prevent key leakage
         sys.stderr.write(f"[{self.log_date_time_string()}] {self.command} {self.path} - {format % args}\n")
 
     def send_json(self, status_code: int, data: dict, headers: dict = None):
@@ -50,7 +37,6 @@ class TensorForgeRequestHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
         
-        # Echo X-Request-ID if sent in client request
         client_req_id = self.headers.get("X-Request-ID")
         if client_req_id:
             self.send_header("X-Request-ID", client_req_id.strip())
@@ -72,31 +58,24 @@ class TensorForgeRequestHandler(BaseHTTPRequestHandler):
             payload["error"]["details"] = details
         self.send_json(status_code, payload, headers=extra_headers)
 
-    # -------------------------------------------------------------
-    # Router Handlers
-    # -------------------------------------------------------------
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
         query = urllib.parse.parse_qs(parsed.query)
 
-        # 1. GET /health (Public)
         if path == "/health":
             self.handle_health()
             return
 
-        # 2. GET / and /dashboard (Public Frontend)
         if path in ("/", "/dashboard"):
             self.handle_dashboard()
             return
 
-        # Protected Routes:
         is_auth, auth_err = verify_request_auth(dict(self.headers))
         if not is_auth:
             self.send_error_response(401, "unauthorized", auth_err, extra_headers={"WWW-Authenticate": "Bearer"})
             return
 
-        # 3. GET /batch/jobs/{job_id}/results
         if path.startswith("/batch/jobs/") and path.endswith("/results"):
             parts = path.strip("/").split("/")
             if len(parts) == 4 and parts[0] == "batch" and parts[1] == "jobs" and parts[3] == "results":
@@ -104,7 +83,6 @@ class TensorForgeRequestHandler(BaseHTTPRequestHandler):
                 self.handle_get_job_results(job_id, query)
                 return
 
-        # 4. GET /batch/jobs/{job_id}
         if path.startswith("/batch/jobs/"):
             parts = path.strip("/").split("/")
             if len(parts) == 3 and parts[0] == "batch" and parts[1] == "jobs":
@@ -112,28 +90,23 @@ class TensorForgeRequestHandler(BaseHTTPRequestHandler):
                 self.handle_get_job_status(job_id)
                 return
 
-        # 404 for any unknown GET
         self.send_error_response(404, "not_found", f"Route GET {path} not found.")
 
     def do_POST(self):
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
 
-        # Prediction & Job endpoints require authentication
         if path in ("/predict", "/predict/batch", "/batch/jobs"):
-            # Step 1: Auth check (401)
             is_auth, auth_err = verify_request_auth(dict(self.headers))
             if not is_auth:
                 self.send_error_response(401, "unauthorized", auth_err, extra_headers={"WWW-Authenticate": "Bearer"})
                 return
 
-            # Step 2: Content-Type check (415)
             content_type = self.headers.get("Content-Type", "")
             if not content_type.lower().startswith("application/json"):
                 self.send_error_response(415, "unsupported_media_type", "Content-Type must be application/json.")
                 return
 
-            # Step 3: Payload Size check (413)
             try:
                 content_length = int(self.headers.get("Content-Length", 0))
             except ValueError:
@@ -150,17 +123,14 @@ class TensorForgeRequestHandler(BaseHTTPRequestHandler):
                 self.send_error_response(413, "payload_too_large", f"Request body exceeds maximum allowed size of {max_limit} bytes.")
                 return
 
-            # Read Body
             raw_body = self.rfile.read(content_length)
 
-            # Step 4: JSON Parsing (400)
             try:
                 body_data = json.loads(raw_body.decode("utf-8"))
             except Exception:
                 self.send_error_response(400, "malformed_json", "Request body is not valid JSON.")
                 return
 
-            # Step 5: Route execution
             if path == "/predict":
                 self.handle_predict(body_data)
             elif path == "/predict/batch":
@@ -175,13 +145,11 @@ class TensorForgeRequestHandler(BaseHTTPRequestHandler):
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
 
-        # Step 1: Auth check
         is_auth, auth_err = verify_request_auth(dict(self.headers))
         if not is_auth:
             self.send_error_response(401, "unauthorized", auth_err, extra_headers={"WWW-Authenticate": "Bearer"})
             return
 
-        # DELETE /batch/jobs/{job_id}
         if path.startswith("/batch/jobs/"):
             parts = path.strip("/").split("/")
             if len(parts) == 3 and parts[0] == "batch" and parts[1] == "jobs":
@@ -191,9 +159,6 @@ class TensorForgeRequestHandler(BaseHTTPRequestHandler):
 
         self.send_error_response(404, "not_found", f"Route DELETE {path} not found.")
 
-    # -------------------------------------------------------------
-    # Logic Handlers
-    # -------------------------------------------------------------
     def handle_health(self):
         pred = self.server.predictor
         if pred and pred.is_loaded:
@@ -210,7 +175,6 @@ class TensorForgeRequestHandler(BaseHTTPRequestHandler):
             })
 
     def handle_predict(self, data: dict):
-        # Step 5: Schema Validation (422)
         issues = validate_single_ticket(data, require_ticket_id=False)
         if issues:
             self.send_error_response(422, "validation_error", "Request failed validation.", details=issues)
@@ -257,7 +221,6 @@ class TensorForgeRequestHandler(BaseHTTPRequestHandler):
             return
 
         tickets = data.get("tickets")
-        # Validate all tickets up front (min 1, max 5000)
         is_valid, issues = validate_batch_tickets(tickets, max_items=5000)
         if not is_valid:
             self.send_error_response(422, "validation_error", "Request failed validation.", details=issues)

@@ -1,12 +1,3 @@
-"""
-High-efficiency model training pipeline for TensorForge 2.0 RideEat Ticket Classifier.
-Features:
-  - Multilingual FeatureUnion (Word n-grams 1-2 + Character word-boundary n-grams 3-5)
-  - Direct LinearSVC with Temperature-Scaled Softmax Calibration (higher accuracy, 5x smaller footprint)
-  - Class-balanced Urgency and Secondary Issue Detectors
-  - Sub-millisecond inference and sub-3MB serialized artifact size
-"""
-
 import os
 import json
 import joblib

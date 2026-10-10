@@ -1,14 +1,3 @@
-"""
-Thread-safe, high-efficiency predictor module for RideEat tickets.
-Optimized for ultra-low latency (< 0.5ms) and compact memory footprint.
-Enforces all business rules and consistency schemas:
-  - Temperature-scaled Softmax calibration
-  - Fixed category-to-team derivation
-  - Spam constraints (secondary=null, is_urgent=false)
-  - Non-identical secondary category
-  - Confidence calculation and needs_human_review flag
-"""
-
 import os
 import joblib
 import numpy as np
@@ -52,9 +41,6 @@ class TicketPredictor:
         print(f"[TicketPredictor] Loaded model version '{self.model_version}' (temp: {self.temperature}) from {self.model_path}")
 
     def predict_one(self, channel: str, subject: str, text: str, ticket_id: str = None) -> dict:
-        """
-        Fast single-ticket inference. Returns dictionary conforming to PredictResponse schema.
-        """
         if not self.is_loaded:
             raise RuntimeError("Model is not loaded yet")
 
@@ -65,7 +51,6 @@ class TicketPredictor:
         full_text = f"{channel} {subject} {text}"
         X = self.vectorizer.transform([full_text])
 
-        # 1. Primary Category & Softmax Confidence
         margins = self.primary_clf.decision_function(X)
         probs = softmax(margins / self.temperature, axis=1)[0]
         primary_idx = int(np.argmax(probs))
@@ -73,7 +58,6 @@ class TicketPredictor:
         confidence = round(float(probs[primary_idx]), 4)
         confidence = max(0.0, min(1.0, confidence))
 
-        # 2. Secondary Category
         has_sec = bool(self.sec_detector.predict(X)[0])
         secondary_cat = None
         if has_sec and primary_cat != "spam_irrelevant":
@@ -81,10 +65,8 @@ class TicketPredictor:
             if candidate_sec != primary_cat:
                 secondary_cat = candidate_sec
 
-        # 3. Urgency
         is_urgent_pred = bool(self.urgency_clf.predict(X)[0])
 
-        # 4. Consistency Rules (Enforced by OpenAPI schema & DATA_NOTES.md)
         if primary_cat == "spam_irrelevant":
             secondary_cat = None
             is_urgent_pred = False
@@ -111,9 +93,6 @@ class TicketPredictor:
         return response
 
     def predict_batch(self, tickets: list) -> list:
-        """
-        High-throughput vectorized batch prediction.
-        """
         if not self.is_loaded:
             raise RuntimeError("Model is not loaded yet")
 
@@ -129,12 +108,10 @@ class TicketPredictor:
 
         X = self.vectorizer.transform(full_texts)
 
-        # Vectorized Primary & Softmax Confidence
         margins = self.primary_clf.decision_function(X)
         probs = softmax(margins / self.temperature, axis=1)
         primary_indices = np.argmax(probs, axis=1)
 
-        # Vectorized Secondary & Urgency
         has_sec_all = self.sec_detector.predict(X)
         sec_candidates = self.sec_clf.predict(X)
         urgency_all = self.urgency_clf.predict(X)
