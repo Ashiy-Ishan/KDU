@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RideEat Support AI — TensorForge 2.0 MVP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f19; color: #f3f4f6; }
+        .glass-panel { background: rgba(17, 24, 39, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .gradient-text { background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+    <!-- Navbar -->
+    <header class="border-b border-gray-800 bg-gray-950/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                    <i class="fa-solid fa-bolt text-white text-lg"></i>
+                </div>
+                <div>
+                    <span class="font-bold text-lg tracking-tight text-white">RideEat <span class="gradient-text">Forge AI</span></span>
+                    <span class="text-xs px-2 py-0.5 rounded-full bg-cyan-950/80 text-cyan-400 border border-cyan-800 ml-2">Team XTurbo • Phase 2 MVP</span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div id="healthBadge" class="flex items-center space-x-2 text-xs font-semibold px-3 py-1.5 rounded-full bg-emerald-950/60 text-emerald-400 border border-emerald-800/80">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span id="healthText">Model Ready (v1.2)</span>
+                </div>
+                <a href="/health" target="_blank" class="text-xs text-gray-400 hover:text-white transition">API /health <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-[10px]"></i></a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <!-- Hero Banner -->
+        <div class="glass-panel rounded-2xl p-6 sm:p-8 relative overflow-hidden">
+            <div class="absolute -right-20 -top-20 w-80 h-80 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="max-w-3xl">
+                <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-2">Multilingual Ticket Classification & Routing Engine</h1>
+                <p class="text-gray-400 text-sm sm:text-base leading-relaxed">
+                    Automated triage and team routing for RideEat customer support across English, Sinhala (Unicode & Singlish), Tamil (Unicode & Tanglish), and mixed scripts. Pure offline ML inference conforming strictly to OpenAPI v2.1.0 specifications.
+                </p>
+            </div>
+        </div>
+
+        <!-- Grid Layout: Left Live Tester, Right Telemetry & Job Simulator -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Left: Single Ticket Interactive Classifier -->
+            <div class="lg:col-span-7 space-y-6">
+                <div class="glass-panel rounded-2xl p-6 shadow-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-bold text-white flex items-center">
+                            <i class="fa-solid fa-ticket text-cyan-400 mr-2"></i> Live Ticket Classifier
+                        </h2>
+                        <span class="text-xs text-gray-400">POST /predict</span>
+                    </div>
+
+                    <!-- Quick Preset Samples -->
+                    <div class="mb-4">
+                        <label class="block text-xs font-medium text-gray-400 mb-1.5">Load Sample Preset:</label>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="loadSample('singlish_delay')" class="text-xs px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 transition">Singlish Delay</button>
+                            <button onclick="loadSample('sinhala_lost')" class="text-xs px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 transition">Sinhala Lost Item</button>
+                            <button onclick="loadSample('tamil_missing')" class="text-xs px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 transition">Tamil Missing Food</button>
+                            <button onclick="loadSample('safety_urgent')" class="text-xs px-2.5 py-1 rounded-lg bg-red-950/50 hover:bg-red-900/50 text-red-300 border border-red-800/80 transition">Safety Urgent</button>
+                        </div>
+                    </div>
+
+                    <form id="predictForm" onsubmit="handlePredict(event)" class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 mb-1">Ticket Channel</label>
+                                <select id="channelInput" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-cyan-500">
+                                    <option value="chat">Chat</option>
+                                    <option value="email">Email</option>
+                                    <option value="call_transcript">Call Transcript</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 mb-1">Subject (Optional)</label>
+                                <input type="text" id="subjectInput" placeholder="e.g. Order #8491 delayed" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-cyan-500">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1">Ticket Body / Transcript</label>
+                            <textarea id="textInput" rows="4" required placeholder="Type customer message in English, Sinhala, Tamil, or Singlish..." class="w-full bg-gray-900 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 focus:outline-none focus:border-cyan-500"></textarea>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-2">
+                            <span class="text-xs text-gray-500" id="latencyIndicator">Latency: -- ms</span>
+                            <button type="submit" id="predictBtn" class="px-5 py-2.5 rounded-xl font-semibold text-sm bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white shadow-lg shadow-indigo-600/30 transition flex items-center">
+                                <span>Classify Ticket</span>
+                                <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Prediction Result Card -->
+                    <div id="resultCard" class="hidden mt-6 p-5 rounded-xl bg-gray-900/90 border border-gray-800 space-y-4 animate-fade-in">
+                        <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+                            <div>
+                                <span class="text-xs font-medium text-gray-400">Target Team Routing</span>
+                                <h3 id="resTeam" class="text-lg font-bold text-white flex items-center gap-2">
+                                    <span>--</span>
+                                </h3>
+                            </div>
+                            <div id="resUrgencyBadge" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                                Non-Urgent
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs">
+                            <div>
+                                <span class="text-gray-400 block mb-1">Primary Category</span>
+                                <span id="resCategory" class="font-semibold text-cyan-400 text-sm">--</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400 block mb-1">Secondary Issue</span>
+                                <span id="resSecondary" class="font-semibold text-gray-300 text-sm">None</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400 block mb-1">Confidence Score</span>
+                                <div class="flex items-center gap-2">
+                                    <span id="resConfidence" class="font-bold text-white text-sm">--</span>
+                                    <div class="w-16 bg-gray-800 h-2 rounded-full overflow-hidden">
+                                        <div id="confidenceBar" class="bg-cyan-400 h-full w-0"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="reviewAlert" class="hidden p-2.5 rounded-lg bg-amber-950/40 border border-amber-800/60 text-amber-300 text-xs flex items-center">
+                            <i class="fa-solid fa-circle-exclamation mr-2"></i>
+                            <span>Flagged for Human Triage Queue (Confidence &lt; 0.45)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Async Batch Job Simulator -->
+            <div class="lg:col-span-5 space-y-6">
+                <div class="glass-panel rounded-2xl p-6 shadow-xl space-y-5">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-bold text-white flex items-center">
+                            <i class="fa-solid fa-microchip text-indigo-400 mr-2"></i> Async Bulk Evaluation
+                        </h2>
+                        <span class="text-xs text-gray-400">POST /batch/jobs</span>
+                    </div>
+                    <p class="text-xs text-gray-400 leading-relaxed">
+                        Simulate asynchronous bulk evaluation runs (up to 5,000 tickets). Demonstrates non-blocking background worker, 202 Location header, live progress polling, and paginated results.
+                    </p>
+
+                    <div class="p-4 rounded-xl bg-gray-900/80 border border-gray-800 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-gray-300">Ticket Volume</span>
+                            <div class="space-x-2">
+                                <button onclick="setJobCount(50)" class="text-xs px-2.5 py-1 rounded bg-gray-800 hover:bg-gray-700 text-gray-300">50</button>
+                                <button onclick="setJobCount(200)" class="text-xs px-2.5 py-1 rounded bg-gray-800 hover:bg-gray-700 text-gray-300">200</button>
+                                <button onclick="setJobCount(1000)" class="text-xs px-2.5 py-1 rounded bg-indigo-900/60 text-indigo-300 border border-indigo-700">1,000</button>
+                            </div>
+                        </div>
+
+                        <button onclick="submitBatchJob()" id="jobSubmitBtn" class="w-full py-2.5 rounded-xl font-semibold text-sm bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/20 transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-play text-xs"></i>
+                            <span id="jobSubmitText">Submit 200 Tickets Job</span>
+                        </button>
+                    </div>
+
+                    <!-- Job Status & Progress Tracker -->
+                    <div id="jobProgressCard" class="hidden p-4 rounded-xl bg-gray-900/90 border border-gray-800 space-y-3">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-gray-400">Job ID: <span id="activeJobId" class="text-gray-200 font-mono">--</span></span>
+                            <span id="jobStatusBadge" class="px-2 py-0.5 rounded font-bold uppercase text-[10px] bg-amber-950 text-amber-400 border border-amber-800">queued</span>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-400">Processing Progress</span>
+                                <span id="jobProgressText" class="font-bold text-white">0 / 0</span>
+                            </div>
+                            <div class="w-full bg-gray-800 h-2.5 rounded-full overflow-hidden">
+                                <div id="jobProgressBar" class="bg-indigo-500 h-full w-0 transition-all duration-300"></div>
+                            </div>
+                        </div>
+
+                        <div id="jobResultsPreview" class="hidden pt-2 text-xs text-gray-400 space-y-1">
+                            <span class="text-emerald-400 font-semibold"><i class="fa-solid fa-check-circle mr-1"></i> Job Completed Successfully!</span>
+                            <p class="text-[11px]">Results ready at <code class="text-cyan-400">/batch/jobs/{id}/results</code> (Retained 6 hours).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fixed Routing Reference -->
+                <div class="glass-panel rounded-2xl p-6 shadow-xl">
+                    <h3 class="text-sm font-bold text-gray-200 mb-3 flex items-center">
+                        <i class="fa-solid fa-sitemap text-cyan-400 mr-2"></i> Category Routing Mapping
+                    </h3>
+                    <div class="grid grid-cols-2 gap-2 text-[11px] text-gray-400">
+                        <div class="p-2 rounded bg-gray-900/60 border border-gray-800/80">payment_refund &rarr; <span class="text-gray-200">Payments & Refunds</span></div>
+                        <div class="p-2 rounded bg-gray-900/60 border border-gray-800/80">ride_trip_issue &rarr; <span class="text-gray-200">Ride Operations</span></div>
+                        <div class="p-2 rounded bg-gray-900/60 border border-gray-800/80">lost_item &rarr; <span class="text-gray-200">Lost & Found</span></div>
+                        <div class="p-2 rounded bg-gray-900/60 border border-gray-800/80">order_missing_wrong &rarr; <span class="text-gray-200">Food Operations</span></div>
+                        <div class="p-2 rounded bg-gray-900/60 border border-gray-800/80">delivery_delay &rarr; <span class="text-gray-200">Delivery Operations</span></div>
+                        <div class="p-2 rounded bg-gray-900/60 border border-gray-800/80">safety_conduct &rarr; <span class="text-gray-200">Trust & Safety</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t border-gray-800 py-6 text-center text-xs text-gray-500">
+        TensorForge 2.0 MVP Stage &bull; Team XTurbo &bull; RideEat Multilingual Classification Engine
+    </footer>
+
+    <script>
+        let selectedJobCount = 200;
+        let activePollingInterval = null;
+
+        const presets = {
+            singlish_delay: {
+                channel: "chat",
+                subject: "",
+                text: "bro mage order eka hour ekakata wada late, driver call ganne na. refund ekak denna puluwanda?"
+            },
+            sinhala_lost: {
+                channel: "chat",
+                subject: "",
+                text: "කාර් එකේ මගේ බෑග් එක අමතක වුණා, ඩ්‍රයිවර්ට කතා කරන්න පුළුවන්ද?"
+            },
+            tamil_missing: {
+                channel: "chat",
+                subject: "",
+                text: "என் ஆர்டர்ல ஒரு ஐட்டம் வரல, பணம் திருப்பி தாங்க"
+            },
+            safety_urgent: {
+                channel: "call_transcript",
+                subject: "",
+                text: "customer: the driver took a wrong turn and he is driving recklessly and refusing to stop the car I am very scared please help"
+            }
+        };
+
+        function loadSample(key) {
+            const data = presets[key];
+            if (data) {
+                document.getElementById('channelInput').value = data.channel;
+                document.getElementById('subjectInput').value = data.subject;
+                document.getElementById('textInput').value = data.text;
+            }
+        }
+
+        async function handlePredict(e) {
+            e.preventDefault();
+            const btn = document.getElementById('predictBtn');
+            const latencyIndicator = document.getElementById('latencyIndicator');
+            const resultCard = document.getElementById('resultCard');
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Classifying...';
+
+            const payload = {
+                channel: document.getElementById('channelInput').value,
+                subject: document.getElementById('subjectInput').value,
+                text: document.getElementById('textInput').value
+            };
+
+            const startTime = performance.now();
+            try {
+                // Note: when querying locally or via reverse proxy, pass API key from storage or header
+                const res = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-Key': 'tf2_842bc2c62f969cfe2b8d9be71606bd1a510ede5fc7ffc8e2'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const elapsed = Math.round(performance.now() - startTime);
+                latencyIndicator.innerText = `Latency: ${elapsed} ms`;
+
+                const data = await res.json();
+                if (res.ok) {
+                    displayResult(data);
+                } else {
+                    alert('Error: ' + (data.error ? data.error.message : 'Prediction failed'));
+                }
+            } catch (err) {
+                latencyIndicator.innerText = `Error: ${err.message}`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span>Classify Ticket</span><i class="fa-solid fa-arrow-right ml-2 text-xs"></i>';
+            }
+        }
+
+        function displayResult(res) {
+            const resultCard = document.getElementById('resultCard');
+            resultCard.classList.remove('hidden');
+
+            document.getElementById('resTeam').innerText = res.team;
+            document.getElementById('resCategory').innerText = res.category;
+            document.getElementById('resSecondary').innerText = res.secondary_category || 'None';
+
+            const confPercent = Math.round(res.confidence * 100);
+            document.getElementById('resConfidence').innerText = `${confPercent}%`;
+            document.getElementById('confidenceBar').style.width = `${confPercent}%`;
+
+            const urgBadge = document.getElementById('resUrgencyBadge');
+            if (res.is_urgent) {
+                urgBadge.className = 'px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-red-950 text-red-400 border border-red-800 animate-pulse';
+                urgBadge.innerText = 'URGENT';
+            } else {
+                urgBadge.className = 'px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-gray-800 text-gray-400 border border-gray-700';
+                urgBadge.innerText = 'NON-URGENT';
+            }
+
+            const reviewAlert = document.getElementById('reviewAlert');
+            if (res.needs_human_review) {
+                reviewAlert.classList.remove('hidden');
+            } else {
+                reviewAlert.classList.add('hidden');
+            }
+        }
+
+        function setJobCount(count) {
+            selectedJobCount = count;
+            document.getElementById('jobSubmitText').innerText = `Submit ${count} Tickets Job`;
+        }
+
+        async function submitBatchJob() {
+            const btn = document.getElementById('jobSubmitBtn');
+            btn.disabled = true;
+
+            // Generate synthetic batch of tickets
+            const tickets = [];
+            for (let i = 1; i <= selectedJobCount; i++) {
+                tickets.push({
+                    ticket_id: `SIM-JOB-${i}`,
+                    channel: i % 2 === 0 ? "chat" : "email",
+                    subject: i % 3 === 0 ? "Order problem" : "",
+                    text: i % 4 === 0 ? "driver never showed up please refund" : "bag left in vehicle"
+                });
+            }
+
+            try {
+                const res = await fetch('/batch/jobs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-Key': 'tf2_842bc2c62f969cfe2b8d9be71606bd1a510ede5fc7ffc8e2'
+                    },
+                    body: JSON.stringify({ tickets: tickets })
+                });
+
+                const data = await res.json();
+                if (res.status === 202) {
+                    startJobTracking(data.job_id, data.total);
+                } else {
+                    alert('Submission failed: ' + (data.error ? data.error.message : 'Error'));
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                alert('Job submission failed: ' + err.message);
+                btn.disabled = false;
+            }
+        }
+
+        function startJobTracking(jobId, total) {
+            const progressCard = document.getElementById('jobProgressCard');
+            const activeJobId = document.getElementById('activeJobId');
+            const statusBadge = document.getElementById('jobStatusBadge');
+            const resultsPreview = document.getElementById('jobResultsPreview');
+
+            progressCard.classList.remove('hidden');
+            resultsPreview.classList.add('hidden');
+            activeJobId.innerText = jobId.slice(0, 8) + '...';
+
+            if (activePollingInterval) clearInterval(activePollingInterval);
+
+            activePollingInterval = setInterval(async () => {
+                try {
+                    const res = await fetch(`/batch/jobs/${jobId}`, {
+                        headers: { 'X-API-Key': 'tf2_842bc2c62f969cfe2b8d9be71606bd1a510ede5fc7ffc8e2' }
+                    });
+                    const statusData = await res.json();
+
+                    statusBadge.innerText = statusData.status;
+                    document.getElementById('jobProgressText').innerText = `${statusData.processed} / ${statusData.total}`;
+                    const pct = Math.round((statusData.processed / statusData.total) * 100);
+                    document.getElementById('jobProgressBar').style.width = `${pct}%`;
+
+                    if (statusData.status === 'succeeded') {
+                        clearInterval(activePollingInterval);
+                        statusBadge.className = 'px-2 py-0.5 rounded font-bold uppercase text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-800';
+                        resultsPreview.classList.remove('hidden');
+                        document.getElementById('jobSubmitBtn').disabled = false;
+                    }
+                } catch (e) {
+                    console.error('Polling error', e);
+                }
+            }, 500);
+        }
+    </script>
+</body>
+</html>
+

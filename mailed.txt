@@ -1,0 +1,33 @@
+
+Yomal Hettiarachchi <hettiarachchiyomal@gmail.com>
+Sat 3 Oct, 21:00 (7 days ago)
+to me
+
+Dear Team Leader,
+
+Congratulations on advancing to Phase 2 (MVP Build) of TensorForge 2.0!
+
+As stated in the Delegate Booklet, here is your team's unique API key:
+
+• Team Name: Team XTurbo
+• Assigned API Key: tf2_842bc2c62f969cfe2b8d9be71606bd1a510ede5fc7ffc8e2
+
+Important API Key Handling Rules:
+1. Protect Your Key: Do not share this key outside your team or lose it.
+2. Judge Evaluation: The judges will use this exact key during project
+evaluation, so it must remain active and functional throughout the
+entire evaluation window.
+3. System Reliability: Please engineer and configure your
+authentication logic carefully so it operates reliably with this key
+under load.
+
+Submission Deadline:
+The MVP Build phase closes on October 10, 2026, at 6:00 PM. Please
+ensure your prototype and documentation are submitted on time.
+
+If you encounter any issues, please contact the organizing committee
+immediately.
+
+Best regards,
+Organizing Committee – TensorForge 2.0
+IEEE Computer Society Student Branch Chapter of KDU
