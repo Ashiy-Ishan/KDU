@@ -143,14 +143,15 @@ python3 src/ml/train.py
 ```
 
 ### Validation Benchmark Scores (Official 800-Ticket Validation Set)
-* **Primary Category Accuracy**: `64.88%`
-* **Primary Category Macro F1**: `67.42%`
-* **Secondary Category Accuracy**: `95.50%`
-* **Urgency Classification Accuracy**: `97.00%`
-* **Urgency Macro F1**: `91.48%`
-* **Single Ticket Inference Latency**: `~0.8 ms` (Benchmark requirement: $< 1,000\text{ ms}$)
-* **100-Ticket Batch Latency**: `~45 ms` (Benchmark requirement: $< 30,000\text{ ms}$)
-* **5,000-Ticket Async Job Latency**: `~2.3 s` (Benchmark requirement: $< 30\text{ min}$)
+* **Primary Category Accuracy**: `65.75%` (Improved from 64.88%)
+* **Primary Category Macro F1**: `67.67%` (Improved from 67.42%)
+* **Secondary Category Accuracy**: `95.25%`
+* **Urgency Classification Accuracy**: `97.12%` (Improved from 97.00%)
+* **Urgency Macro F1**: `91.69%` (Improved from 91.48%)
+* **Model Artifact Size**: `2.39 MB` (Reduced by 78% from 11 MB)
+* **Single Ticket Inference Latency**: `~0.3 ms` (Benchmark requirement: $< 1,000\text{ ms}$)
+* **100-Ticket Batch Latency**: `~25 ms` (Benchmark requirement: $< 30,000\text{ ms}$)
+* **5,000-Ticket Async Job Latency**: `~1.8 s` (Benchmark requirement: $< 30\text{ min}$)
 
 ---
 

@@ -1,7 +1,7 @@
 {
-  "primary_accuracy": 0.64875,
-  "primary_macro_f1": 0.674191923089881,
-  "secondary_accuracy": 0.955,
-  "urgency_accuracy": 0.97,
-  "urgency_macro_f1": 0.9147666737694439
+  "primary_accuracy": 0.6575,
+  "primary_macro_f1": 0.6766501060644877,
+  "secondary_accuracy": 0.9525,
+  "urgency_accuracy": 0.97125,
+  "urgency_macro_f1": 0.9168891237674521
 }

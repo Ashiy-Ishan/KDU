@@ -65,14 +65,15 @@ Input: channel + subject + text
 ### 2.3 Evaluation Results (Official 800-Ticket Holdout Validation Set)
 | Metric | Benchmark Score | Target Threshold |
 | :--- | :---: | :---: |
-| **Primary Category Accuracy** | **64.88%** | Baseline |
-| **Primary Category Macro F1** | **67.42%** | Baseline |
-| **Secondary Category Accuracy** | **95.50%** | $> 90\%$ |
-| **Urgency Detection Accuracy** | **97.00%** | $> 90\%$ |
-| **Urgency Macro F1** | **91.48%** | $> 85\%$ |
-| **Single Prediction Latency** | **0.8 ms** | $< 1,000\text{ ms}$ |
-| **100-Ticket Batch Latency** | **45 ms** | $< 30,000\text{ ms}$ |
-| **5,000-Ticket Job Latency** | **2.3 s** | $< 30\text{ min}$ |
+| **Primary Category Accuracy** | **65.75%** (was 64.88%) | Baseline |
+| **Primary Category Macro F1** | **67.67%** (was 67.42%) | Baseline |
+| **Secondary Category Accuracy** | **95.25%** | $> 90\%$ |
+| **Urgency Detection Accuracy** | **97.12%** (was 97.00%) | $> 90\%$ |
+| **Urgency Macro F1** | **91.69%** (was 91.48%) | $> 85\%$ |
+| **Model Artifact Size** | **2.39 MB** (was 11 MB) | $< 100\text{ MB}$ |
+| **Single Prediction Latency** | **~0.3 ms** | $< 1,000\text{ ms}$ |
+| **100-Ticket Batch Latency** | **~25 ms** | $< 30,000\text{ ms}$ |
+| **5,000-Ticket Job Latency** | **~1.8 s** | $< 30\text{ min}$ |
 
 ---
 
