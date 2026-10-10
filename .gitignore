@@ -1,0 +1,74 @@
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Dependency directories
+node_modules/
+vendor/
+venv/
+.venv/
+.env/
+
+# Build output
+dist/
+build/
+out/
+coverage/
+.cache/
+.next/
+.nuxt/
+.pytest_cache/
+__pycache__/
+*.py[cod]
+*.class
+*.o
+*.so
+*.dll
+*.exe
+*.jar
+*.war
+*.ear
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+secrets.*
+
+# Local tooling
+.terraform/
+.venv/
+.mypy_cache/
+.pyre/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+
+# Package manager caches
+.pnpm-store/
+.npm/
+.yarn/
+.pnp.*
